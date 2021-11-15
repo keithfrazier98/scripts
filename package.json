@@ -1,0 +1,9 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "Scripts to automate DataX jobs",
+  "main": "index.ts",
+  "repository": "https://github.com/dataxfi/scripts.git",
+  "author": "DataX Team",
+  "license": "MIT"
+}
