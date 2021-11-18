@@ -2,6 +2,8 @@ const axios = require("axios").default;
 const { google } = require("googleapis");
 const { GoogleAuth } = require("google-auth-library");
 const schedule = require("node-schedule");
+const http = require("http");
+
 require("dotenv").config();
 
 interface Hit {
@@ -48,7 +50,6 @@ async function getTokenData(
       }
     );
 
-    
     const total: number = response.data.hits.total;
     globalList.push(...response.data.hits.hits);
     accumulator += paginationValue;
@@ -213,11 +214,10 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
           files.map(async (file) => {
             console.log(`Deleting ${file.name}: ${file.id}`);
             try {
-              
               const res = await drive.files.delete({ fileId: file.id });
               console.log("Status " + res.status + ": deletion successful");
             } catch (error) {
-              console.log(error)
+              console.log(error);
             }
           });
         } else {
@@ -248,10 +248,6 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
   });
 }
 
-
-
-const http = require("http");
-
 var requestListener = function (req, res) {
   if (req.url != "/favicon.ico") {
   }
@@ -266,4 +262,3 @@ server.listen(process.env.PORT || 8080, () => {
     console.log("newFiles created");
   });
 });
-
