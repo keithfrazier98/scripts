@@ -212,8 +212,13 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
         if (files.length && index === 0) {
           files.map(async (file) => {
             console.log(`Deleting ${file.name}: ${file.id}`);
-            const res = await drive.files.delete({ fileId: file.id });
-            console.log("Status " + res.status + ": deletion successful");
+            try {
+              
+              const res = await drive.files.delete({ fileId: file.id });
+              console.log("Status " + res.status + ": deletion successful");
+            } catch (error) {
+              console.log(error)
+            }
           });
         } else {
           console.log("No files found.");
@@ -243,9 +248,22 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
   });
 }
 
- const job = schedule.scheduleJob("0 * * * * *", function () {
-   //,4,137,56
-   writeToSADrive([1, 137, 56, 4]);
-   });
 
-exports.createDataTokenList = createDataTokenList;
+
+const http = require("http");
+
+var requestListener = function (req, res) {
+  if (req.url != "/favicon.ico") {
+  }
+  console.log(req.url);
+  res.writeHead(200);
+  res.end("DataX");
+};
+var server = http.createServer(requestListener);
+server.listen(process.env.PORT || 8080, () => {
+  var job = schedule.scheduleJob("* 0 * * *", function () {
+    writeToSADrive([1, 137, 56, 4]);
+    console.log("newFiles created");
+  });
+});
+
