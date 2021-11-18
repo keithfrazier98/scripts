@@ -2,8 +2,20 @@
   "name": "scripts",
   "version": "1.0.0",
   "description": "Scripts to automate DataX jobs",
-  "main": "index.ts",
+  "main": "AutoUpdateTokens.js",
   "repository": "https://github.com/dataxfi/scripts.git",
   "author": "DataX Team",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "node dist/AutoUpdateTokens.js"
+  },
+  "dependencies": {
+    "@types/node": "^16.11.7",
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "google-auth-library": "^7.10.2",
+    "googleapis": "39",
+    "node-schedule": "^2.0.0",
+    "typescript": "^4.4.4"
+  }
 }
