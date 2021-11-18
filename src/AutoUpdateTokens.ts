@@ -243,10 +243,6 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
   });
 }
 
-//createDataTokenList(1)
-
-//writeToSADrive([1, 137, 56, 4]);
-
  const job = schedule.scheduleJob("0 * * * * *", function () {
    //,4,137,56
    writeToSADrive([1, 137, 56, 4]);
