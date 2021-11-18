@@ -255,10 +255,11 @@ var requestListener = function (req, res) {
   res.writeHead(200);
   res.end("DataX");
 };
+
+
 var server = http.createServer(requestListener);
 server.listen(process.env.PORT || 8080, () => {
   var job = schedule.scheduleJob("* 0 * * *", function () {
-    writeToSADrive([1, 137, 56, 4]);
-    console.log("newFiles created");
+    writeToSADrive([1, 137, 56]);
   });
 });

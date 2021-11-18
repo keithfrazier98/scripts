@@ -7,7 +7,9 @@
   "author": "DataX Team",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/AutoUpdateTokens.js"
+    "start": "pm2 start dist/AutoUpdateTokens.js", 
+    "stop" : "pm2 stop dist/AutoUpdateTokens.js",
+    "monitor" : "yarn pm2 monit"
   },
   "dependencies": {
     "@types/node": "^16.11.7",
@@ -16,6 +18,7 @@
     "google-auth-library": "^7.10.2",
     "googleapis": "39",
     "node-schedule": "^2.0.0",
+    "pm2": "^5.1.2",
     "typescript": "^4.4.4"
   }
 }
