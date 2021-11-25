@@ -7,9 +7,10 @@
   "author": "DataX Team",
   "license": "MIT",
   "scripts": {
-    "start": "pm2 start dist/AutoUpdateTokens.js",
-    "stop": "pm2 stop dist/AutoUpdateTokens.js",
-    "monitor": "yarn pm2 monit"
+    "compile": "node_modules/.bin/tsc",
+    "start": "pm2 start dist/AutoUpdateTokens.js", 
+    "stop" : "pm2 stop dist/AutoUpdateTokens.js",
+    "monitor" : "yarn pm2 monit"
   },
   "dependencies": {
     "@types/node": "^16.11.7",

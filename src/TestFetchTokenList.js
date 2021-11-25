@@ -131,5 +131,5 @@ async function fetchPreparedTokenList(chainId) {
   }
 }
 
-fetchPreparedTokenList(56).then(console.log);
+//fetchPreparedTokenList(56).then(console.log);
 //fetchPreparedTokenListGoogleApis(1);
