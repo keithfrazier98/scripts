@@ -3,7 +3,6 @@ const { google } = require("googleapis");
 const { GoogleAuth } = require("google-auth-library");
 const schedule = require("node-schedule");
 const http = require("http");
-
 require("dotenv").config();
 
 interface Hit {
@@ -250,6 +249,8 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
 
 var requestListener = function (req, res) {
   if (req.url != "/favicon.ico") {
+    // go to site directly to manually update the token list
+    writeToSADrive([1,137,56])
   }
   console.log(req.url);
   res.writeHead(200);
