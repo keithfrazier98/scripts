@@ -4,6 +4,65 @@ const { GoogleAuth } = require("google-auth-library");
 const schedule = require("node-schedule");
 const http = require("http");
 require("dotenv").config();
+const rinkebyTokens = {
+  name: "Datax",
+  logoURI:
+    "https://gateway.pinata.cloud/ipfs/QmadC9khFWskmycuhrH1H3bzqzhjJbSnxAt1XCbhVMkdiY",
+  keywords: ["datatokens", "oceanprotocol", "datax"],
+  tags: {
+    datatokens: {
+      name: "Datatokens",
+      description:
+        "Ocean Protocol's Datatokens that represent access rights to underlying data and AI services",
+    },
+  },
+  timestamp: "2021-08-24T20:02:48+00:00",
+  tokens: [
+    {
+      chainId: 4,
+      address: "0xCF6823cf19855696D49c261e926dcE2719875C3D",
+      symbol: "ZEASEA-66",
+      pool: "0xfd81eD84494Fa548C0A8b815Fbdc3b6bd47FC3b2",
+      name: "Zealous Seahorse Token",
+      decimals: 18,
+      logoURI:
+        "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+      tags: ["datatoken"],
+    },
+    {
+      chainId: 4,
+      address: "0x8D2da54A1691FD7Bd1cD0a242d922109B0616C68",
+      symbol: "DAZORC-13",
+      pool: "0xe817e4183A09512B7438E1a6f6c121DBc179538e",
+      name: "Dazzling Orca Token",
+      decimals: 18,
+      logoURI:
+        "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+      tags: ["datatoken"],
+    },
+    {
+      chainId: 4,
+      address: "0x1d0C4F1DC8058a5395b097DE76D3cD8804ef6bb4",
+      symbol: "SAGKRI-94",
+      pool: "0xfdd3a4d1b4d96e9812e27897346006b906bd98ce",
+      name: "Sagacious Krill Token",
+      decimals: 18,
+      logoURI:
+        "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+      tags: ["datatoken"],
+    },
+    {
+      chainId: 4,
+      address: "0x8967bcf84170c91b0d24d4302c2376283b0b3a07",
+      symbol: "OCEAN",
+      name: "Ocean Token",
+      decimals: 18,
+      logoURI:
+        "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
+      tags: ["oceantoken"],
+    },
+  ],
+};
 
 interface Hit {
   _id: string;
@@ -212,11 +271,13 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
         if (files.length && index === 0) {
           files.map(async (file) => {
             console.log(`Deleting ${file.name}: ${file.id}`);
-            try {
-              const res = await drive.files.delete({ fileId: file.id });
-              console.log("Status " + res.status + ": deletion successful");
-            } catch (error) {
-              console.log(error);
+            if (file.name != "datatokens4") {
+              try {
+                const res = await drive.files.delete({ fileId: file.id });
+                console.log("Status " + res.status + ": deletion successful");
+              } catch (error) {
+                console.log(error);
+              }
             }
           });
         } else {
@@ -225,7 +286,11 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
       }
     );
 
-    const datatokens = await createDataTokenList(chainId);
+    let datatokens;
+    chainId === 4
+      ? (datatokens = JSON.stringify(rinkebyTokens))
+      : (datatokens = await createDataTokenList(chainId));
+
     console.log("Creating a new file");
     //create a file if no file exists
     await drive.files.create(
@@ -250,13 +315,12 @@ async function writeToSADrive(chainIds: number[]): Promise<any> {
 var requestListener = function (req, res) {
   if (req.url != "/favicon.ico") {
     // go to site directly to manually update the token list
-    writeToSADrive([1,137,56])
+    writeToSADrive([1, 137, 56, 4]);
   }
   console.log(req.url);
   res.writeHead(200);
   res.end("DataX");
 };
-
 
 var server = http.createServer(requestListener);
 server.listen(process.env.PORT || 8080, () => {

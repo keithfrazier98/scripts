@@ -10,7 +10,8 @@
     "compile": "node_modules/.bin/tsc",
     "start": "pm2 start dist/AutoUpdateTokens.js", 
     "stop" : "pm2 stop dist/AutoUpdateTokens.js",
-    "monitor" : "yarn pm2 monit"
+    "monitor" : "yarn pm2 monit", 
+    "logs": "yarn pm4 logs"
   },
   "dependencies": {
     "@types/node": "^16.11.7",
