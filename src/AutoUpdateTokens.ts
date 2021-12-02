@@ -246,7 +246,7 @@ async function createDataTokenList(chainId: number) {
 }
 
 /**
- * Deletes any old file in google drive, creates new file and saves to google drive.
+ * Creates or updates token list files in google drive.
  * @returns
  *
  */
@@ -255,7 +255,6 @@ async function writeToSADrive(
   backups: boolean
 ): Promise<any> {
   try {
-
     //create auth from SA creds
     const clientEmail = process.env.CLIENT_EMAIL;
     const privateKey = process.env.PRIVATE_KEY;
@@ -295,6 +294,8 @@ async function writeToSADrive(
         ? (datatokens = JSON.stringify(rinkebyTokens))
         : (datatokens = await createDataTokenList(chainId));
 
+      const permissionsEmails = ["keithers98@gmail.com", "dataxfi@gmail.com"];
+
       if (found) {
         //update file if it already exists
 
@@ -327,10 +328,27 @@ async function writeToSADrive(
             body: datatokens,
           },
         });
-
         console.log(
           `-------------------------------------\n -- \nSuccessfully created file ${fileNameConvention}${chainId}\nresponse status: ${creationResponse.status}\nfileId:${creationResponse.data.id}\n -- \n-------------------------------------`
         );
+
+        permissionsEmails.forEach(async (email) => {
+          const permissionsResponse = await drive.permissions.create({
+            emailMessage: `You have been added to view a file from the DataX Google Drive Service Account. \n File name: ${fileNameConvention}${chainId} \n File Id: ${creationResponse.data.id}`,
+            fileId: creationResponse.data.id,
+            supportsAllDrives: true,
+            sendNotificationEmail: true,
+            useDomainAdminAccessl: true,
+            requestBody: {
+              emailAddress: email,
+              role: "reader",
+              type: "user",
+            },
+          });
+          console.log(
+            `-------------------------------------\n -- \nSuccessfully created file permission \nresponse status: ${permissionsResponse.status}\nfileId:${permissionsResponse.data.id}\nFor email ${email}\n -- \n-------------------------------------`
+          );
+        });
       }
     });
   } catch (error) {
@@ -364,4 +382,3 @@ server.listen(process.env.PORT || 8080, () => {
     );
   });
 });
-
