@@ -3,6 +3,7 @@ const { google } = require("googleapis");
 const { GoogleAuth } = require("google-auth-library");
 const schedule = require("node-schedule");
 const http = require("http");
+
 require("dotenv").config();
 const rinkebyTokens = {
   name: "Datax",
@@ -233,11 +234,15 @@ async function prepareDataTokenList(tokens: any, chainId: number) {
 }
 
 async function createDataTokenList(chainId: number) {
-  console.log("Generating new token list.");
-  const tokenData = await getTokenData(chainId);
-  const parsedData = await parseTokenData(tokenData);
-  const tokenList = await prepareDataTokenList(parsedData, chainId);
-  return JSON.stringify(tokenList);
+  try {
+    console.log("Generating new token list.");
+    const tokenData = await getTokenData(chainId);
+    const parsedData = await parseTokenData(tokenData);
+    const tokenList = await prepareDataTokenList(parsedData, chainId);
+    return JSON.stringify(tokenList);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 /**
@@ -245,77 +250,102 @@ async function createDataTokenList(chainId: number) {
  * @returns
  *
  */
-async function writeToSADrive(chainIds: number[]): Promise<any> {
-  const clientEmail = process.env.CLIENT_EMAIL;
-  const privateKey = process.env.PRIVATE_KEY;
-  const auth = new GoogleAuth({
-    credentials: {
-      client_email: clientEmail,
-      private_key: privateKey,
-    },
-    scopes: ["https://www.googleapis.com/auth/drive.file"],
-  });
+async function writeToSADrive(
+  chainIds: number[],
+  backups: boolean
+): Promise<any> {
+  try {
 
-  const drive = google.drive({ version: "v3", auth: auth });
-
-  chainIds.forEach(async (chainId, index) => {
-    //list files to see it file already exists
-    await drive.files.list(
-      {
-        pageSize: 10,
-        fields: "nextPageToken, files(id, name)",
+    //create auth from SA creds
+    const clientEmail = process.env.CLIENT_EMAIL;
+    const privateKey = process.env.PRIVATE_KEY;
+    const auth = new GoogleAuth({
+      credentials: {
+        client_email: clientEmail,
+        private_key: privateKey,
       },
-      (err, res) => {
-        if (err) return console.error("The API returned an error: " + err);
-        const files = res.data.files;
-        if (files.length && index === 0) {
-          files.map(async (file) => {
-            console.log(`Deleting ${file.name}: ${file.id}`);
-            if (file.name != "datatokens4") {
-              try {
-                const res = await drive.files.delete({ fileId: file.id });
-                console.log("Status " + res.status + ": deletion successful");
-              } catch (error) {
-                console.log(error);
-              }
-            }
-          });
-        } else {
-          console.log("No files found.");
-        }
-      }
-    );
+      scopes: ["https://www.googleapis.com/auth/drive.file"],
+    });
 
-    let datatokens;
-    chainId === 4
-      ? (datatokens = JSON.stringify(rinkebyTokens))
-      : (datatokens = await createDataTokenList(chainId));
+    //create an authorized instance of GDrive
+    const drive = google.drive({ version: "v3", auth: auth });
 
-    console.log("Creating a new file");
-    //create a file if no file exists
-    await drive.files.create(
-      {
-        requestBody: {
-          name: `datatokens${chainId}`,
-          mimeType: "application/json",
-        },
-        media: {
-          mimeType: "application/json",
-          body: datatokens,
-        },
-      },
-      (err, res) => {
-        if (err) console.error(err);
-        console.log(res.data);
+    let fileNameConvention: string;
+    backups
+      ? (fileNameConvention = "Bdatatokens")
+      : (fileNameConvention = "datatokens");
+
+    //get current file list
+    const fileList = await drive.files.list({
+      pageSize: 100,
+      fields: "nextPageToken, files(id, name)",
+    });
+
+    console.log("Current file list", fileList.data.files);
+
+    //iterate over each file in the list and update/create a file
+    chainIds.forEach(async (chainId, index) => {
+      const found = fileList.data.files.find(
+        (file: { name: string; id: string }) =>
+          file.name === `${fileNameConvention}${chainId}`
+      );
+
+      let datatokens;
+      chainId === 4
+        ? (datatokens = JSON.stringify(rinkebyTokens))
+        : (datatokens = await createDataTokenList(chainId));
+
+      if (found) {
+        //update file if it already exists
+
+        console.log(`File for chain ${chainId} was found:`, found);
+        const updateResponse = await drive.files.update({
+          fileId: found.id,
+          requestBody: {
+            name: `${fileNameConvention}${chainId}`,
+            mimeType: "application/json",
+          },
+          media: {
+            mimeType: "application/json",
+            body: datatokens,
+          },
+        });
+
+        console.log(
+          `-------------------------------------\n -- \nSuccessfully updated file ${found.name}\nresponse status: ${updateResponse.status}\nfileId: ${found.id}\n -- \n-------------------------------------`
+        );
+      } else {
+        // create a file if no file exists
+        console.log("Creating a new file");
+        const creationResponse = await drive.files.create({
+          requestBody: {
+            name: `${fileNameConvention}${chainId}`,
+            mimeType: "application/json",
+          },
+          media: {
+            mimeType: "application/json",
+            body: datatokens,
+          },
+        });
+
+        console.log(
+          `-------------------------------------\n -- \nSuccessfully created file ${fileNameConvention}${chainId}\nresponse status: ${creationResponse.status}\nfileId:${creationResponse.data.id}\n -- \n-------------------------------------`
+        );
       }
-    );
-  });
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 var requestListener = function (req, res) {
-  if (req.url != "/favicon.ico") {
-    // go to site directly to manually update the token list
-    writeToSADrive([1, 137, 56, 4]);
+  if (req.url != "/favicon.ico" && req.url != "/backups") {
+    writeToSADrive([1, 137, 56, 4], false);
+  }
+
+  if (req.url === "/backups") {
+    console.log("Generating backup files!");
+    writeToSADrive([1, 137, 56, 4], true);
   }
   console.log(req.url);
   res.writeHead(200);
@@ -324,7 +354,14 @@ var requestListener = function (req, res) {
 
 var server = http.createServer(requestListener);
 server.listen(process.env.PORT || 8080, () => {
-  var job = schedule.scheduleJob("* 0 * * *", function () {
-    writeToSADrive([1, 137, 56]);
+  var job = schedule.scheduleJob("0 0 0 * * *", function (fireDate) {
+    writeToSADrive([1, 137, 56, 4], false);
+    console.log(
+      "This job was supposed to run at " +
+        fireDate +
+        ", but actually ran at " +
+        new Date()
+    );
   });
 });
+

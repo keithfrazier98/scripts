@@ -3,3 +3,6 @@
 .DS_Store
 .env
 todo.md
+reference.js
+/utils
+.env.test
