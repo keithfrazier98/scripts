@@ -354,7 +354,7 @@ var requestListener = function (req, res) {
 
 var server = http.createServer(requestListener);
 server.listen(process.env.PORT || 8080, () => {
-  var job = schedule.scheduleJob("0 0 0 * * *", function (fireDate) {
+  var job = schedule.scheduleJob("59 * * * *", function (fireDate) {
     writeToSADrive([1, 137, 56, 4], false);
     console.log(
       "This job was supposed to run at " +
