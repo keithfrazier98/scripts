@@ -8,10 +8,11 @@
   "license": "MIT",
   "scripts": {
     "compile": "node_modules/.bin/tsc",
-    "start": "pm2 start dist/AutoUpdateTokens.js", 
-    "stop" : "pm2 stop dist/AutoUpdateTokens.js",
-    "monitor" : "yarn pm2 monit", 
-    "logs": "yarn pm4 logs"
+    "start": "pm2 start dist/AutoUpdateTokens.js",
+    "stop": "pm2 stop dist/AutoUpdateTokens.js",
+    "monitor": "yarn pm2 monit",
+    "logs": "yarn pm2 logs", 
+    "test": "node dist/AutoUpdateTokensTest.js"
   },
   "dependencies": {
     "@types/node": "^16.11.7",
@@ -23,5 +24,9 @@
     "node-schedule": "^2.0.0",
     "pm2": "^5.1.2",
     "typescript": "^4.4.4"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3"
   }
 }
