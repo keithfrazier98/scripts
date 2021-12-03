@@ -294,7 +294,7 @@ async function writeToSADrive(
         ? (datatokens = JSON.stringify(rinkebyTokens))
         : (datatokens = await createDataTokenList(chainId));
 
-      const permissionsEmails = ["keithers98@gmail.com", "dataxfi@gmail.com"];
+      const permissionsEmails = ["keithers98@gmail.com", "datax.fi@gmail.com"];
 
       if (found) {
         //update file if it already exists
@@ -357,13 +357,14 @@ async function writeToSADrive(
 }
 
 var requestListener = function (req, res) {
+  const networks = JSON.parse(process.env.NETWORKS)
   if (req.url != "/favicon.ico" && req.url != "/backups") {
-    writeToSADrive([1, 137, 56, 4], false);
+    writeToSADrive(networks || [1, 137, 56, 4, 246, 1285], false);
   }
 
   if (req.url === "/backups") {
     console.log("Generating backup files!");
-    writeToSADrive([1, 137, 56, 4], true);
+    writeToSADrive(networks || [1, 137, 56, 4, 246, 1285], true);
   }
   console.log(req.url);
   res.writeHead(200);
@@ -372,8 +373,9 @@ var requestListener = function (req, res) {
 
 var server = http.createServer(requestListener);
 server.listen(process.env.PORT || 8080, () => {
+  const networks = JSON.parse(process.env.NETWORKS)
   var job = schedule.scheduleJob("59 * * * *", function (fireDate) {
-    writeToSADrive([1, 137, 56, 4], false);
+    writeToSADrive(networks || [1, 137, 56, 4, 246, 1285], false);
     console.log(
       "This job was supposed to run at " +
         fireDate +
