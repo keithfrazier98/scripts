@@ -51,7 +51,9 @@ The script can be manually instantiate by visiting the url/port it is hosted on,
 - PRIVATE_KEY : 
   
   -----BEGIN PRIVATE KEY-----
+
        your_private_key
+       
   -----END PRIVATE KEY-----
 
 > Note that there are no quotations around either of the variables and the private key is seperated by actual new lines. 
