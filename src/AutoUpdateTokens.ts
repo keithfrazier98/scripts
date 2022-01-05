@@ -120,7 +120,7 @@ async function getTokenData(
     const total: number = response.data.hits.total;
     globalList.push(...response.data.hits.hits);
     accumulator += paginationValue;
-    if (total > accumulator && accumulator < 500) {
+    if (total > accumulator) {
       await getTokenData(chainId, accumulator, globalList);
     }
     return await Promise.resolve(globalList);
@@ -245,8 +245,11 @@ async function createDataTokenList(chainId: number) {
   try {
     console.log("Generating new token list.");
     const tokenData = await getTokenData(chainId);
+    // console.log("FETCHED TOKEN DATA FOR:", chainId, tokenData);
     const parsedData = await parseTokenData(tokenData);
+    // console.log("PARSED DATA FOR:", chainId, parsedData);
     const tokenList = await prepareDataTokenList(parsedData, chainId);
+    // console.log("FINAL TOKEN LIST FOR:", chainId, tokenList);
     return JSON.stringify(tokenList);
   } catch (error) {
     console.error(error);
@@ -365,14 +368,14 @@ async function writeToSADrive(
 }
 
 var requestListener = function (req, res) {
-  const networks = JSON.parse(process.env.NETWORKS);
+  // const networks = JSON.parse(process.env.NETWORKS);
   if (req.url != "/favicon.ico" && req.url != "/backups") {
-    writeToSADrive(networks || [1, 137, 56, 4, 246, 1285], false);
+    writeToSADrive([1, 137, 56, 4, 246, 1285], false);
   }
 
   if (req.url === "/backups") {
     console.log("Generating backup files!");
-    writeToSADrive(networks || [1, 137, 56, 4, 246, 1285], true);
+    writeToSADrive([1, 137, 56, 4, 246, 1285], true);
   }
   console.log(req.url);
   res.writeHead(200);
@@ -381,9 +384,9 @@ var requestListener = function (req, res) {
 
 var server = http.createServer(requestListener);
 server.listen(process.env.PORT || 8080, () => {
-  const networks = JSON.parse(process.env.NETWORKS);
+  // const networks = JSON.parse(process.env.NETWORKS);
   var job = schedule.scheduleJob("59 * * * *", function (fireDate) {
-    writeToSADrive(networks || [1, 137, 56, 4, 246, 1285], false);
+    writeToSADrive([1, 137, 56, 4, 246, 1285], false);
     console.log(
       "This job was supposed to run at " +
         fireDate +
