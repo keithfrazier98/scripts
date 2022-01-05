@@ -35,6 +35,21 @@ The script can be manually instantiate by visiting the url/port it is hosted on,
   - Use ```curl http://localhost:8080/``` to create or update the main files.
   - Use ```curl http://localhost:8080/backups``` to create or generate backup files.
 
+**Updating/Upgrading the Ubuntu server** 
+
+Upon connecting to the droplet you may see some messages regarding upgrades or security updates. 
+
+![Update Message](images/updatesExample.png)
+
+1. Reboot the server to apply automatic updates
+  - run `reboot`
+2. If there are still updates when you log back into the server, update and upgrade all available packages. 
+  - run `sudo apt upgrade` to upgrade all packages 
+  - This will likely require a more kb usage, approve the memory usage when the terminal prompts you to. 
+  - Upgrading docs: https://poopcode.com/update-all-packages-in-ubuntu/
+  - System Restart Docs: https://poopcode.com/system-restart-required-digitalocean-ubuntu-droplet-warning-message-how-to-resolve/
+3. After the upgrades occur, reboot the system again. 
+4. Log back on and run `sudo apt update` to verify everything is up to date. 
 
 <hr />
 
