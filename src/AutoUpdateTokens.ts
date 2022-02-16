@@ -3,7 +3,7 @@ const { google } = require("googleapis");
 const { GoogleAuth } = require("google-auth-library");
 const schedule = require("node-schedule");
 const http = require("http");
-const rinkebyTokensJson = require("./rinkebyTokens.json")
+import rinkebyTokens from "./rinkebyTokens.json";
 require("dotenv").config();
 const oceanAddresses = {
   1: "0x967da4048cD07aB37855c090aAF366e4ce1b9F48",
@@ -13,17 +13,35 @@ const oceanAddresses = {
   246: "0x593122aae80a6fc3183b2ac0c4ab3336debee528",
   1285: "0x99C409E5f62E4bd2AC142f17caFb6810B8F0BAAE",
 };
-const rinkebyTokens = JSON.parse(rinkebyTokensJson)
 
 interface Hit {
   _id: string;
+  _source: {
+    price: {
+      address: string;
+      datatoken: number;
+      exchange_id: string;
+      isConsumable: string;
+      ocean: number;
+      pools: string[];
+      type: string;
+      value: number;
+    };
+    dataTokenInfo: {
+      address: string;
+      cap: number;
+      decimals: number;
+      name: string;
+      symbol: string;
+    };
+  };
 }
 
 interface SingleTokenInfo {
   address: string;
   name: string;
   symbol: string;
-  decimals: string;
+  decimals: number;
   pool: string;
 }
 
@@ -33,31 +51,24 @@ interface SingleTokenInfo {
  * @returns
  */
 
-async function getTokenData(
-  chainId: number,
-  accumulator?: number | null,
-  globalList?: Hit[]
-): Promise<any> {
+async function getTokenData(chainId: number, accumulator?: number | null, globalList?: Hit[]): Promise<any> {
   let paginationValue: number = 100;
   if (!accumulator) accumulator = 0;
   if (!globalList) globalList = [];
   try {
-    const response = await axios.post(
-      "https://aquarius.oceanprotocol.com/api/v1/aquarius/assets/query",
-      {
-        from: accumulator,
-        size: paginationValue,
-        query: {
-          bool: {
-            filter: [
-              { terms: { chainId: [chainId] } },
-              { term: { _index: "aquarius" } },
-              { term: { isInPurgatory: "false" } },
-            ],
-          },
+    const response = await axios.post("https://aquarius.oceanprotocol.com/api/v1/aquarius/assets/query", {
+      from: accumulator,
+      size: paginationValue,
+      query: {
+        bool: {
+          filter: [
+            { terms: { chainId: [chainId] } },
+            { term: { _index: "aquarius" } },
+            { term: { isInPurgatory: "false" } },
+          ],
         },
-      }
-    );
+      },
+    });
 
     const total: number = response.data.hits.total;
     globalList.push(...response.data.hits.hits);
@@ -79,14 +90,9 @@ async function getTokenData(
 async function parseTokenData(globalList: Hit[]): Promise<any> {
   const parsedList = globalList.map(async (token: Hit) => {
     try {
-      const tokenDid: string = token._id;
-      const response = await axios.get(
-        `https://aquarius.oceanprotocol.com/api/v1/aquarius/assets/ddo/${tokenDid}`
-      );
-
-      const { dataTokenInfo, price } = response.data;
-
+      const { dataTokenInfo, price } = token._source;
       if (price && price.type === "pool") {
+        // console.log(token)
         const { name, symbol, decimals } = dataTokenInfo;
         const tokenInfo: SingleTokenInfo = {
           address: dataTokenInfo.address,
@@ -104,9 +110,7 @@ async function parseTokenData(globalList: Hit[]): Promise<any> {
   });
 
   const resolvedList: any = await Promise.allSettled(parsedList);
-  const filteredList = resolvedList
-    .filter((promise) => promise.value)
-    .map((promise) => promise.value);
+  const filteredList = resolvedList.filter((promise) => promise.value).map((promise) => promise.value);
   return filteredList;
 }
 
@@ -122,14 +126,12 @@ async function prepareDataTokenList(tokens: any, chainId: number) {
   try {
     let listTemplate = {
       name: "Datax",
-      logoURI:
-        "https://gateway.pinata.cloud/ipfs/QmadC9khFWskmycuhrH1H3bzqzhjJbSnxAt1XCbhVMkdiY",
+      logoURI: "https://gateway.pinata.cloud/ipfs/QmadC9khFWskmycuhrH1H3bzqzhjJbSnxAt1XCbhVMkdiY",
       keywords: ["datatokens", "oceanprotocol", "datax"],
       tags: {
         datatokens: {
           name: "Datatokens",
-          description:
-            "Ocean Protocol's Datatokens that represent access rights to underlying data and AI services",
+          description: "Ocean Protocol's Datatokens that represent access rights to underlying data and AI services",
         },
       },
       timestamp: "",
@@ -150,8 +152,7 @@ async function prepareDataTokenList(tokens: any, chainId: number) {
         pool,
         name,
         decimals,
-        logoURI:
-          "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+        logoURI: "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
         tags: ["datatoken"],
       };
     });
@@ -164,17 +165,14 @@ async function prepareDataTokenList(tokens: any, chainId: number) {
         symbol: "OCEAN",
         name: "Ocean Token",
         decimals: 18,
-        logoURI:
-          "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
+        logoURI: "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
         tags: ["oceantoken"],
       },
     ];
 
     listTemplate.tokens = [...tokensData, ...oceantoken];
 
-    listTemplate.timestamp = new Date()
-      .toISOString()
-      .replace(/.\d+[A-Z]$/, "+00:00");
+    listTemplate.timestamp = new Date().toISOString().replace(/.\d+[A-Z]$/, "+00:00");
 
     return listTemplate;
   } catch (e) {
@@ -189,7 +187,7 @@ async function createDataTokenList(chainId: number) {
     const tokenData = await getTokenData(chainId);
     // console.log("FETCHED TOKEN DATA FOR:", chainId, tokenData);
     const parsedData = await parseTokenData(tokenData);
-    // console.log("PARSED DATA FOR:", chainId, parsedData);
+    console.log("PARSED DATA FOR:", chainId, parsedData);
     const tokenList = await prepareDataTokenList(parsedData, chainId);
     // console.log("FINAL TOKEN LIST FOR:", chainId, tokenList);
     return JSON.stringify(tokenList);
@@ -203,10 +201,7 @@ async function createDataTokenList(chainId: number) {
  * @returns
  *
  */
-async function writeToSADrive(
-  chainIds: number[],
-  backups: boolean
-): Promise<any> {
+async function writeToSADrive(chainIds: number[], backups: boolean): Promise<any> {
   try {
     //create auth from SA creds
     const clientEmail = process.env.CLIENT_EMAIL;
@@ -223,9 +218,7 @@ async function writeToSADrive(
     const drive = google.drive({ version: "v3", auth: auth });
 
     let fileNameConvention: string;
-    backups
-      ? (fileNameConvention = "Bdatatokens")
-      : (fileNameConvention = "datatokens");
+    backups ? (fileNameConvention = "Bdatatokens") : (fileNameConvention = "datatokens");
 
     //get current file list
     const fileList = await drive.files.list({
@@ -238,15 +231,13 @@ async function writeToSADrive(
     //iterate over each file in the list and update/create a file
     chainIds.forEach(async (chainId, index) => {
       const found = fileList.data.files.find(
-        (file: { name: string; id: string }) =>
-          file.name === `${fileNameConvention}${chainId}`
+        (file: { name: string; id: string }) => file.name === `${fileNameConvention}${chainId}`
       );
 
       let datatokens;
-      chainId === 4
-        ? (datatokens = JSON.stringify(rinkebyTokens))
-        : (datatokens = await createDataTokenList(chainId));
+      chainId === 4 ? (datatokens = JSON.stringify(rinkebyTokens)) : (datatokens = await createDataTokenList(chainId));
 
+      return;
       const permissionsEmails = ["keithers98@gmail.com", "datax.fi@gmail.com"];
 
       if (found) {
@@ -329,11 +320,6 @@ server.listen(process.env.PORT || 8080, () => {
   // const networks = JSON.parse(process.env.NETWORKS);
   var job = schedule.scheduleJob("59 * * * *", function (fireDate) {
     writeToSADrive([1, 137, 56, 4, 246, 1285], false);
-    console.log(
-      "This job was supposed to run at " +
-        fireDate +
-        ", but actually ran at " +
-        new Date()
-    );
+    console.log("This job was supposed to run at " + fireDate + ", and actually ran at " + new Date());
   });
 });
