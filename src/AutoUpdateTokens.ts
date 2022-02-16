@@ -83,8 +83,9 @@ async function getTokenData(chainId: number, accumulator?: number | null, global
 }
 
 /**
- * get all tokens that have a pool
- *
+ * 
+ * @param globalList 
+ * @returns parsed list of tokens (all tokens with a pool)
  */
 
 async function parseTokenData(globalList: Hit[]): Promise<any> {
