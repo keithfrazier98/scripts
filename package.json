@@ -11,10 +11,11 @@
     "start": "pm2 start dist/AutoUpdateTokens.js",
     "stop": "pm2 stop dist/AutoUpdateTokens.js",
     "monitor": "yarn pm2 monit",
-    "logs": "yarn pm2 logs", 
+    "logs": "yarn pm2 logs",
     "test": "node dist/AutoUpdateTokensTest.js"
   },
   "dependencies": {
+    "@trycourier/courier": "^3.5.0",
     "@types/node": "^16.11.7",
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",

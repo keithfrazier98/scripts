@@ -1,0 +1,83 @@
+{
+    "name": "Datax",
+    "logoURI": "https://gateway.pinata.cloud/ipfs/QmadC9khFWskmycuhrH1H3bzqzhjJbSnxAt1XCbhVMkdiY",
+    "keywords": ["datatokens", "oceanprotocol", "datax"],
+    "tags": {
+        "datatokens": {
+            "name": "Datatokens",
+            "description": "Ocean Protocol's Datatokens that represent access rights to underlying data and AI services"
+        }
+    },
+    "timestamp": "2021-08-24T20:02:48+00:00",
+    "tokens": [
+        {
+            "chainId": 4,
+            "address": "0xCF6823cf19855696D49c261e926dcE2719875C3D",
+            "symbol": "ZEASEA-66",
+            "pool": "0xfd81eD84494Fa548C0A8b815Fbdc3b6bd47FC3b2",
+            "name": "Zealous Seahorse Token",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+            "tags": ["datatoken"]
+        },
+        {
+            "chainId": 4,
+            "address": "0x8D2da54A1691FD7Bd1cD0a242d922109B0616C68",
+            "symbol": "DAZORC-13",
+            "pool": "0xe817e4183A09512B7438E1a6f6c121DBc179538e",
+            "name": "Dazzling Orca Token",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+            "tags": ["datatoken"]
+        },
+        {
+            "chainId": 4,
+            "address": "0x1d0C4F1DC8058a5395b097DE76D3cD8804ef6bb4",
+            "symbol": "SAGKRI-94",
+            "pool": "0xfdd3a4d1b4d96e9812e27897346006b906bd98ce",
+            "name": "Sagacious Krill Token",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+            "tags": ["datatoken"]
+        },
+        {
+            "chainId": 4,
+            "address": "0x8967bcf84170c91b0d24d4302c2376283b0b3a07",
+            "symbol": "OCEAN",
+            "name": "Ocean Token",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
+            "tags": ["oceantoken"]
+        },
+        {
+            "chainId": 4,
+            "address": "0x89eEe7002f0Af4c40326A40E5c8f83B112952F63",
+            "symbol": "BOOSEA-94",
+            "pool": "0x032D84110fE6f5943AD25c87E08C7ec48C5751be",
+            "name": "Boorish Seahorse Token",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+            "tags": ["datatoken"]
+        },
+        {
+            "chainId": 4,
+            "address": "0x658151a69654C0C7cA6b436AAdE2Ca0D012AED13",
+            "symbol": "FABPUF-37",
+            "pool": "0xA0339BdC7970C65641f723Bfc3DF18ba2660b917",
+            "name": "Fabulous Pufferfish Token",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+            "tags": ["datatoken"]
+        },
+        {
+            "chainId": 4,
+            "address": "0x5B7bb7AF87e952D6D13963968078dE7B1bdA1A4e",
+            "symbol": "BELPEN-95",
+            "name": "Bellicose Penguin Token",
+            "pool": "0xB602b33f5b207984B2ac9cCb378ddEe78B4D29da",
+            "decimals": 18,
+            "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+            "tags": ["datatoken"]
+        }
+    ]
+}
