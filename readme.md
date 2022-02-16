@@ -81,3 +81,7 @@ Upon connecting to the droplet you may see some messages regarding upgrades or s
   There are two functions in the script that do the same thing (getting a file of tokens corresponding to a chain ID). One of them uses google-auth-library and googleapis packages, the other uses json web tokens with axios. Client side react apps can use google-auth-library, but **AutoUpdateTokens** does. 
 
   Both function calls are commented out at the bottom. Uncomment one and use **node src/TestFetchTokenList.js** to log the response from GDrive. 
+
+
+## Manual Verification
+You can checkout [ManualVerification.md](ManualVerification.md) for instructions on how to use Postman to manually verify your token lists are being created correctly. 
