@@ -63,7 +63,7 @@ Upon connecting to the droplet you may see some messages regarding upgrades or s
 
 **In a local .env file** the variables can be set as follows:
 
-- CLIENT*EMAIL="your_SA*.iam.gserviceaccount.com"
+- CLIENT_EMAIL= "your_SA.iam.gserviceaccount.com"
 - PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nyour_private_key\n-----END PRIVATE KEY-----"
   > Note above that there is a new line (\n) escape character in the private key, and both keys are wrapped in quotations.
 
