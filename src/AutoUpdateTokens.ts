@@ -1,6 +1,5 @@
 const axios = require("axios").default;
 const fs = require("fs");
-import rinkebyTokens from "./rinkebyTokens.json";
 require("dotenv").config();
 
 const oceanAddresses = {
@@ -210,4 +209,4 @@ async function main(chainIds: number[]): Promise<any> {
   })
 }
 
-main([1, 137, 56, 4, 246, 1285])
+main([1, 137, 56, 246, 1285])
