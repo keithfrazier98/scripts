@@ -17,6 +17,7 @@ jobs:
     - name: Run AutoUpdateTokens.ts
       run: |
         ts-node src/AutoUpdateTokens.ts
+        git status
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
