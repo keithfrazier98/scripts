@@ -13,9 +13,10 @@ jobs:
     - name: Setup node/typescript
       run: |
         npm install
+        npm install -g tsc-node
     - name: Run AutoUpdateTokens.ts
       run: |
-        npx tsc-node src/AutoUpdateTokens.ts
+        tsc-node src/AutoUpdateTokens.ts
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
