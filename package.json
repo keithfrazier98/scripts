@@ -7,24 +7,15 @@
   "author": "DataX Team",
   "license": "MIT",
   "scripts": {
-    "compile": "node_modules/.bin/tsc",
-    "start": "pm2 start dist/AutoUpdateTokens.js",
-    "stop": "pm2 stop dist/AutoUpdateTokens.js",
-    "monitor": "yarn pm2 monit",
-    "logs": "yarn pm2 logs",
-    "test": "node dist/AutoUpdateTokensTest.js",
+    "compile": "yarn tsc",
+    "start": "node dist/AutoUpdateTokens.js",
+    "stop": "node dist/AutoUpdateTokens.js",
     "run": "tsc src/AutoUpdateTokens.ts"
   },
   "dependencies": {
-    "@trycourier/courier": "^3.5.0",
     "@types/node": "^16.11.7",
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
-    "google-auth-library": "^7.10.2",
-    "googleapis": "39",
-    "njwt": "^1.1.0",
-    "node-schedule": "^2.0.0",
-    "pm2": "^5.1.2",
     "typescript": "^4.4.4"
   },
   "devDependencies": {

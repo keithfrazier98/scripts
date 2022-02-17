@@ -12,13 +12,13 @@ const oceanAddresses = {
 };
 
 const chainidToName = {
-  1:"Mainnet",
-  4:"Rinkeby",
-  56:"BinanceSmartChain",
-  137:"PolygonMainnet",
-  246:"EnergyWebChain",
-  1285:"Moonriver"
-}
+  1: "Mainnet",
+  4: "Rinkeby",
+  56: "BinanceSmartChain",
+  137: "PolygonMainnet",
+  246: "EnergyWebChain",
+  1285: "Moonriver",
+};
 
 interface Hit {
   _id: string;
@@ -94,11 +94,11 @@ async function getTokenData(chainId: number, accumulator?: number | null, global
  * @returns parsed list of tokens (all tokens with a pool)
  */
 
-async function parseTokenData(globalList: Hit[]): Promise<any> {
-  const parsedList = globalList.map(async (token: Hit) => {
+function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
+ const parsedList = globalList.map((token: Hit) => {
     try {
       const { dataTokenInfo, price } = token._source;
-      if (price && price.type === "pool") {
+      if (price && (price.type === "pool" || price.type === "exchange")) {
         const { name, symbol, decimals } = dataTokenInfo;
         const tokenInfo: SingleTokenInfo = {
           address: dataTokenInfo.address,
@@ -113,10 +113,7 @@ async function parseTokenData(globalList: Hit[]): Promise<any> {
       console.error(`ERROR: ${error.message}`);
     }
   });
-
-  const resolvedList: any = await Promise.allSettled(parsedList);
-  const filteredList = resolvedList.filter((promise) => promise.value).map((promise) => promise.value);
-  return filteredList;
+  return parsedList.filter(value => value !== undefined);
 }
 
 /**
@@ -127,9 +124,11 @@ async function parseTokenData(globalList: Hit[]): Promise<any> {
  * a json list of datatokens
  */
 
-async function prepareDataTokenList(tokens: any, chainId: number) {
+function prepareDataTokenList(tokens: any, chainId: number) {
+  console.log(tokens);
+  
   try {
-    let listTemplate = {
+    let tokenList = {
       name: "Datax",
       logoURI: "https://gateway.pinata.cloud/ipfs/QmadC9khFWskmycuhrH1H3bzqzhjJbSnxAt1XCbhVMkdiY",
       keywords: ["datatokens", "oceanprotocol", "datax"],
@@ -175,11 +174,11 @@ async function prepareDataTokenList(tokens: any, chainId: number) {
       },
     ];
 
-    listTemplate.tokens = [...tokensData, ...oceantoken];
+    tokenList.tokens = [...tokensData, ...oceantoken];
 
-    listTemplate.timestamp = new Date().toISOString().replace(/.\d+[A-Z]$/, "+00:00");
+    tokenList.timestamp = new Date().toISOString().replace(/.\d+[A-Z]$/, "+00:00");
 
-    return listTemplate;
+    return tokenList;
   } catch (e) {
     console.error(`ERROR: ${e.message}`);
   }
@@ -190,9 +189,9 @@ async function createDataTokenList(chainId: number) {
     console.log(`Generating new token list for ${chainidToName[chainId]}.`);
     const tokenData = await getTokenData(chainId);
     // console.log("FETCHED TOKEN DATA FOR:", chainId, tokenData);
-    const parsedData = await parseTokenData(tokenData);
+    const parsedData = parseTokenData(tokenData);
     // console.log("PARSED DATA FOR:", chainId, parsedData);
-    const tokenList = await prepareDataTokenList(parsedData, chainId);
+    const tokenList = prepareDataTokenList(parsedData, chainId);
     // console.log("FINAL TOKEN LIST FOR:", chainId, tokenList);
     return JSON.stringify(tokenList);
   } catch (error) {
@@ -200,13 +199,12 @@ async function createDataTokenList(chainId: number) {
   }
 }
 
-
 async function main(chainIds: number[]): Promise<any> {
-  chainIds.forEach(async(chainId)=>{
-    let datatoken = chainId ==4 ? JSON.stringify(rinkebyTokens) : await createDataTokenList(chainId);
-    let fileName = chainidToName[chainId]
-    fs.writeFileSync(`TokenList/${fileName}.json`, datatoken)
-  })
+  chainIds.forEach(async (chainId) => {
+    let datatoken = await createDataTokenList(chainId);
+    let fileName = chainidToName[chainId];
+    fs.writeFileSync(`TokenList/${fileName}.json`, datatoken);
+  });
 }
 
-main([1, 137, 56, 246, 1285])
+main([1, 137, 56, 246, 1285]);
