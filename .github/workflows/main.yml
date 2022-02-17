@@ -1,0 +1,33 @@
+name: Updating Token List
+
+on:
+  schedule:
+  - cron: "* */1 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+        fetch-depth: 0 
+    - name: Setup node/typescript
+      run: |
+        npm install
+        npm install -g ts-node
+    - name: Run AutoUpdateTokens.ts
+      run: |
+        ts-node src/AutoUpdateTokens.ts
+    - name: Commit changes
+      run: |
+        git add TokenList/
+        git config --local user.email "actions@action.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -m "Updating Token List" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }} 
+      

@@ -7,3 +7,4 @@ reference.js
 /utils
 .env.test
 .env.store
+.env.example

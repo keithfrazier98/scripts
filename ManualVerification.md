@@ -85,8 +85,11 @@ You can mimick this in postman by simply searching in the response.
 1. press cmd+f (mac/linux), cmd+f (windows), or click the magnifing glass icon in the response nav bar. 
 
 2. Type this in the search bar:  `"type": "pool"`
+3. Take note of the total matches
+4. Type this in the search bar:  `"type": "exchange"`
+5. Take note of the total matches
 
-At this point you can just check the response count in the search bar against the amount of tokens you are expecting to see. 
+At this point you can just check the response count in the search bar against the amount of tokens you are expecting to see. The token list for trading should match the number of matches for both searches, and the token list for staking should only match the number of matches for the "pool" search. 
 
 ## Looking up particular tokens
 
