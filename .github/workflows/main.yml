@@ -1,8 +1,8 @@
 name: Updating Token List
 
-on: 
+on:
   schedule:
-    -cron: "*/5 * * * *"
+  - cron: "*/5 * * * *"
 
 jobs:
   build:
