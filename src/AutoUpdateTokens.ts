@@ -188,7 +188,7 @@ async function prepareDataTokenList(tokens: any, chainId: number) {
 
 async function createDataTokenList(chainId: number) {
   try {
-    console.log("Generating new token list.");
+    console.log(`Generating new token list for ${chainidToName[chainId]}.`);
     const tokenData = await getTokenData(chainId);
     // console.log("FETCHED TOKEN DATA FOR:", chainId, tokenData);
     const parsedData = await parseTokenData(tokenData);
