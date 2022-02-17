@@ -17,7 +17,12 @@ jobs:
     - name: Run AutoUpdateTokens.ts
       run: |
         ts-node src/AutoUpdateTokens.ts
-        git status
+    - name: Commit changes
+      run: |
+        git add TokenList/
+        git config --local user.email "actions@action.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -m "Add changes" -a
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
