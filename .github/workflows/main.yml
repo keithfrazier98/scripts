@@ -1,6 +1,8 @@
 name: Updating Token List
 
-on: workflow_dispatch
+on: 
+  schedule:
+    -cron: '0 * * * *'
 
 jobs:
   build:
@@ -22,7 +24,7 @@ jobs:
         git add TokenList/
         git config --local user.email "actions@action.github.com"
         git config --local user.name "github-actions[bot]"
-        git commit -m "Add changes" -a
+        git commit -m "Updating Token List" -a
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
