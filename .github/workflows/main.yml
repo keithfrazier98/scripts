@@ -1,8 +1,6 @@
 name: Updating Token List
 
-on:
-  schedule:
-  - cron: "*/2 * * * *"
+on: workflow_dispatch
 
 jobs:
   build:
