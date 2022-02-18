@@ -11,15 +11,6 @@ const oceanAddresses = {
   1285: "0x99C409E5f62E4bd2AC142f17caFb6810B8F0BAAE",
 };
 
-const chainidToName = {
-  1: "Mainnet",
-  4: "Rinkeby",
-  56: "BinanceSmartChain",
-  137: "PolygonMainnet",
-  246: "EnergyWebChain",
-  1285: "Moonriver",
-};
-
 interface Hit {
   _id: string;
   _source: {
@@ -186,7 +177,7 @@ function prepareDataTokenList(tokens: any, chainId: number) {
 
 async function createDataTokenList(chainId: number) {
   try {
-    console.log(`Generating new token list for ${chainidToName[chainId]}.`);
+    console.log(`Generating new token list for ${chainId}.`);
     const tokenData = await getTokenData(chainId);
     // console.log("FETCHED TOKEN DATA FOR:", chainId, tokenData);
     const parsedData = parseTokenData(tokenData);
@@ -202,7 +193,7 @@ async function createDataTokenList(chainId: number) {
 async function main(chainIds: number[]): Promise<any> {
   chainIds.forEach(async (chainId) => {
     let datatoken = await createDataTokenList(chainId);
-    let fileName = chainidToName[chainId];
+    let fileName = `chain${chainId}`;
     fs.writeFileSync(`TokenList/${fileName}.json`, datatoken);
   });
 }
