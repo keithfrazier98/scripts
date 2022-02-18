@@ -86,10 +86,11 @@ async function getTokenData(chainId: number, accumulator?: number | null, global
  */
 
 function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
- const parsedList = globalList.map((token: Hit) => {
+  const parsedList = globalList.map((token: Hit) => {
     try {
       const { dataTokenInfo, price } = token._source;
-      if (price && (price.type === "pool" || price.type === "exchange")) {
+      //|| price.type === "exchange"
+      if (price && price.type === "pool") {
         const { name, symbol, decimals } = dataTokenInfo;
         const tokenInfo: SingleTokenInfo = {
           address: dataTokenInfo.address,
@@ -104,7 +105,7 @@ function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
       console.error(`ERROR: ${error.message}`);
     }
   });
-  return parsedList.filter(value => value !== undefined);
+  return parsedList.filter((value) => value !== undefined);
 }
 
 /**
@@ -117,7 +118,7 @@ function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
 
 function prepareDataTokenList(tokens: any, chainId: number) {
   console.log(tokens);
-  
+
   try {
     let tokenList = {
       name: "Datax",

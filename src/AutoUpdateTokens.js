@@ -106,7 +106,7 @@ function parseTokenData(globalList) {
     var parsedList = globalList.map(function (token) {
         try {
             var _a = token._source, dataTokenInfo = _a.dataTokenInfo, price = _a.price;
-            if (price && (price.type === "pool" || price.type === "exchange")) {
+            if (price && price.type === "pool") {
                 var name_1 = dataTokenInfo.name, symbol = dataTokenInfo.symbol, decimals = dataTokenInfo.decimals;
                 var tokenInfo = {
                     address: dataTokenInfo.address,
