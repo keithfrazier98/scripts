@@ -1,6 +1,8 @@
 # Contributing to DataX
 Thanks for taking the time to contribute! We want to make contributing to this project as easy and transparent as possible, whether it's:
 
+>If you would like to tailor any particular part of this repository to fit your team needs specificaly, it is recomended that you fork and clone this to make breaking changes. 
+
 - Reporting a bug
 - Discussing the current state of the code
 - Submitting a fix

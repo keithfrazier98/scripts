@@ -12,3 +12,18 @@
 ## Manual Verification
 
 You can checkout [ManualVerification.md](ManualVerification.md) for instructions on how to use Postman to manually verify your token lists are being created correctly.
+
+## Adding a chain
+>Keep in mind the PR's for adding a chain directly to this repository will only be accepted if they are supported on [Datapolis](https://www.datapolis.city/trade). 
+
+The file naming convention for token lists is standard in this repository as well as funcitons in datax.js:
+
+`chain<chainId>` 
+
+You can add a chain to this script by just adding the chainId to the array passed to the [main](https://github.com/dataxfi/scripts/blob/19ac9da4995da230e9bef55d1d1c8d07f4e1b780/src/AutoUpdateTokens.ts#L201) function. The token list will then be created and kept in this repository. 
+
+## Changing the screening method for the token lists. 
+
+> The script fetches all of the datatokens on a chain from ocean then parses them based on specific criteria. The deciding conditional that determines whether a datatoken is added to the token lists can be found [here](https://github.com/dataxfi/scripts/blob/19ac9da4995da230e9bef55d1d1c8d07f4e1b780/src/AutoUpdateTokens.ts#L92). 
+
+The current implementation filters the token data, and adds the token to the list if the token has a `price` attribute that has a nested `type` attribute that is either equal to `exchange` or `pool`. This is specifically tailored to the use case of [Datapolis](https://www.datapolis.city/trade), but if your team would like to use another screening method you can simply (fork and clone then) change the criterea in the conditional. Check out [ManualVerification.md](ManualVerification.md) for a step by step guide to requesting the data with Postman, and preview the data yourself to see if another method will fit your teams needs. 
