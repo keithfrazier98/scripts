@@ -1,6 +1,6 @@
 name: Updating Token List
 
-on: [push]
+on: push
   schedule:
   - cron: "* */1 * * *"
 
