@@ -1,0 +1,43 @@
+{
+  "name": "Datax",
+  "logoURI": "https://gateway.pinata.cloud/ipfs/QmadC9khFWskmycuhrH1H3bzqzhjJbSnxAt1XCbhVMkdiY",
+  "keywords": ["datatokens", "oceanprotocol", "datax"],
+  "tags": {
+    "datatokens": {
+      "name": "Datatokens",
+      "description": "Ocean Protocol's Datatokens that represent access rights to underlying data and AI services"
+    }
+  },
+  "timestamp": "2021-08-24T20:02:48+00:00",
+  "tokens": [
+    {
+      "chainId": 4,
+      "address": "0x2b23785d064dE7Fa1C3cc0f00605dc119B204d0d",
+      "symbol": "Test120",
+      "pool": "0xB05ed01996EbB25ec2f11e6104ddC8b1e8665708",
+      "name": "Test120",
+      "decimals": 18,
+      "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+      "tags": ["datatoken"]
+    },
+    {
+      "chainId": 4,
+      "address": "0x2b23785d064dE7Fa1C3cc0f00605dc119B204d0d",
+      "symbol": "TREMAN-89",
+      "pool": "0xB05ed01996EbB25ec2f11e6104ddC8b1e8665708",
+      "name": "Trenchant Manatee Token",
+      "decimals": 18,
+      "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
+      "tags": ["datatoken"]
+    },
+    {
+      "chainId": 4,
+      "address": "0x8967bcf84170c91b0d24d4302c2376283b0b3a07",
+      "symbol": "OCEAN",
+      "name": "Ocean Token",
+      "decimals": 18,
+      "logoURI": "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
+      "tags": ["oceantoken"]
+    }
+  ]
+}
