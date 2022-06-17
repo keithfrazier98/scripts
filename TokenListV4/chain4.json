@@ -18,7 +18,7 @@
       "name": "Test120",
       "decimals": 18,
       "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
-      "tags": ["datatoken"] ,
+      "tags": ["datatoken"],
       "did": ""
     },
     {
@@ -29,7 +29,8 @@
       "name": "Trenchant Manatee Token",
       "decimals": 18,
       "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
-      "tags": ["datatoken"]
+      "tags": ["datatoken"],
+      "did": "did:op:2da44cc28023139f243b4d8de43af2b65347cd370d92a2f5af7e18a61fef096a"
     },
     {
       "chainId": 4,
@@ -38,9 +39,7 @@
       "name": "Ocean Token",
       "decimals": 18,
       "logoURI": "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
-      "tags": ["oceantoken"],
-      "did": "did:op:2da44cc28023139f243b4d8de43af2b65347cd370d92a2f5af7e18a61fef096a"
-
+      "tags": ["oceantoken"]
     }
   ]
 }
