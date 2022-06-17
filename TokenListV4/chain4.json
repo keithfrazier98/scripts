@@ -22,9 +22,9 @@
     },
     {
       "chainId": 4,
-      "address": "0x2b23785d064dE7Fa1C3cc0f00605dc119B204d0d",
+      "address": "0xda72767849189eab2e5d76677738d4B83B2EFcb7",
       "symbol": "TREMAN-89",
-      "pool": "0xB05ed01996EbB25ec2f11e6104ddC8b1e8665708",
+      "pool": "0x2e85F0e19C8DBFAc0d2BB7ca4EF31Eb7b72c680c",
       "name": "Trenchant Manatee Token",
       "decimals": 18,
       "logoURI": "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
