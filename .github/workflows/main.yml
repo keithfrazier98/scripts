@@ -23,7 +23,7 @@ jobs:
           node build/AutoUpdateTokens.js
       - name: Commit changes
         run: |
-          git add TokenListV4/
+          git add TokenListsV4/
           git config --local user.email "actions@action.github.com"
           git config --local user.name "github-actions[bot]"
           git commit -m "Updating Token List" -a
