@@ -1,6 +1,5 @@
-const axios = require("axios").default;
-const fs = require("fs");
-require("dotenv").config();
+// import fs from "fs";
+const { GraphQLClient, gql } = require("graphql-request");
 
 const oceanAddresses = {
   1: "0x967da4048cD07aB37855c090aAF366e4ce1b9F48",
@@ -11,35 +10,32 @@ const oceanAddresses = {
   1285: "0x99C409E5f62E4bd2AC142f17caFb6810B8F0BAAE",
 };
 
-interface Hit {
-  _id: string;
-  _source: {
-    price: {
-      address: string;
-      datatoken: number;
-      exchange_id: string;
-      isConsumable: string;
-      ocean: number;
-      pools: string[];
-      type: string;
-      value: number;
-    };
-    dataTokenInfo: {
-      address: string;
-      cap: number;
-      decimals: number;
-      name: string;
-      symbol: string;
-    };
-  };
-}
+const chains = {
+  1: "mainnet",
+  4: "rinkeby",
+  56: "bsc",
+  137: "polygon",
+  246: "energyweb",
+  1285: "moonriver",
+};
 
-interface SingleTokenInfo {
+interface Hit {
+  symbol: string;
+  decimals: string;
   address: string;
   name: string;
-  symbol: string;
-  decimals: number;
-  pool: string;
+  supply: string;
+  pools: {
+    id;
+  }[];
+  fixedRateExchanges: {
+    active;
+    exchangeId;
+  }[];
+}
+
+interface SingleTokenInfo extends Hit {
+  isFRE: boolean;
 }
 
 /**
@@ -49,33 +45,47 @@ interface SingleTokenInfo {
  */
 
 async function getTokenData(chainId: number, accumulator?: number | null, globalList?: Hit[]): Promise<any> {
-  let paginationValue: number = 100;
+  let paginationValue: number = 500;
   if (!accumulator) accumulator = 0;
   if (!globalList) globalList = [];
-  try {
-    const response = await axios.post("https://aquarius.oceanprotocol.com/api/v1/aquarius/assets/query", {
-      from: accumulator,
-      size: paginationValue,
-      query: {
-        bool: {
-          filter: [
-            { terms: { chainId: [chainId] } },
-            { term: { _index: "aquarius" } },
-            { term: { isInPurgatory: "false" } },
-          ],
-        },
-      },
-    });
 
-    const total: number = response.data.hits.total;
-    globalList.push(...response.data.hits.hits);
+  const endpoint = `https://v4.subgraph.${chains[chainId]}.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph`;
+
+  const graphQLClient = new GraphQLClient(endpoint, { headers: {} });
+
+  const query = gql`
+    {
+      tokens(where: { isDatatoken: true }, first: 1000) {
+        symbol
+        decimals
+        address
+        name
+        supply
+        pools {
+          id
+        }
+        fixedRateExchanges {
+          active
+          exchangeId
+        }
+      }
+    }
+  `;
+
+  console.log(query);
+
+  console.log(endpoint);
+  try {
+    const response = await graphQLClient.request(query);
+    const total: number = response.tokens.length;
+    globalList.push(response.tokens);
     accumulator += paginationValue;
     if (total > accumulator) {
       await getTokenData(chainId, accumulator, globalList);
     }
-    return await Promise.resolve(globalList);
+    return await Promise.resolve(globalList.flat());
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Error: ${error.message}`, error);
   }
 }
 
@@ -86,26 +96,16 @@ async function getTokenData(chainId: number, accumulator?: number | null, global
  */
 
 function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
-  const parsedList = globalList.map((token: Hit) => {
+  return globalList.map((token: Hit) => {
     try {
-      const { dataTokenInfo, price } = token._source;
-      //|| price.type === "exchange"
-      if (price && price.type === "pool") {
-        const { name, symbol, decimals } = dataTokenInfo;
-        const tokenInfo: SingleTokenInfo = {
-          address: dataTokenInfo.address,
-          name: name,
-          symbol: symbol,
-          decimals: decimals,
-          pool: price.address,
-        };
-        return tokenInfo;
-      }
+      return {
+        ...token,
+        isFRE: token.pools.length > 0 ? false : true,
+      } as SingleTokenInfo;
     } catch (error) {
       console.error(`ERROR: ${error.message}`);
     }
   });
-  return parsedList.filter((value) => value !== undefined);
 }
 
 /**
@@ -140,36 +140,29 @@ function prepareDataTokenList(tokens: any, chainId: number) {
     };
 
     const tokensData = tokens.map((token) => {
-      const { address, symbol, name, pool, decimals } = token;
       return {
+        ...token,
         chainId,
-        address,
-        symbol,
-        pool,
-        name,
-        decimals,
         logoURI: "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
         tags: ["datatoken"],
       };
     });
 
-    // fetch 1inch list
-    let oceantoken = [
-      {
-        chainId,
-        address: oceanAddresses[chainId],
-        symbol: "OCEAN",
-        name: "Ocean Token",
-        decimals: 18,
-        logoURI: "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
-        tags: ["oceantoken"],
-      },
-    ];
+    // // fetch 1inch list
+    // let oceantoken = [
+    //   {
+    //     chainId,
+    //     address: oceanAddresses[chainId],
+    //     symbol: "OCEAN",
+    //     name: "Ocean Token",
+    //     decimals: 18,
+    //     logoURI: "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
+    //     tags: ["oceantoken"],
+    //   },
+    // ];
 
-    tokenList.tokens = [...tokensData, ...oceantoken];
-
+    tokenList.tokens = tokensData;
     tokenList.timestamp = new Date().toISOString().replace(/.\d+[A-Z]$/, "+00:00");
-
     return tokenList;
   } catch (e) {
     console.error(`ERROR: ${e.message}`);
@@ -184,7 +177,7 @@ async function createDataTokenList(chainId: number) {
     const parsedData = parseTokenData(tokenData);
     // console.log("PARSED DATA FOR:", chainId, parsedData);
     const tokenList = prepareDataTokenList(parsedData, chainId);
-    // console.log("FINAL TOKEN LIST FOR:", chainId, tokenList);
+    // // console.log("FINAL TOKEN LIST FOR:", chainId, tokenList);
     return JSON.stringify(tokenList);
   } catch (error) {
     console.error(error);
@@ -195,8 +188,8 @@ async function main(chainIds: number[]): Promise<any> {
   chainIds.forEach(async (chainId) => {
     let datatoken = await createDataTokenList(chainId);
     let fileName = `chain${chainId}`;
-    fs.writeFileSync(`TokenList/${fileName}.json`, datatoken);
+    // fs.writeFileSync(`TokenList/${fileName}.json`, datatoken);
   });
 }
 
-main([1, 137, 56, 246, 1285]);
+main([1, 4, 137, 56, 246, 1285]);

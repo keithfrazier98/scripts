@@ -1,3 +1,18 @@
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -43,9 +58,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-var axios = require("axios").default;
-var fs = require("fs");
-require("dotenv").config();
+var _a = require("graphql-request"), GraphQLClient = _a.GraphQLClient, gql = _a.gql;
 var oceanAddresses = {
     1: "0x967da4048cD07aB37855c090aAF366e4ce1b9F48",
     4: "0x8967bcf84170c91b0d24d4302c2376283b0b3a07",
@@ -54,48 +67,49 @@ var oceanAddresses = {
     246: "0x593122aae80a6fc3183b2ac0c4ab3336debee528",
     1285: "0x99C409E5f62E4bd2AC142f17caFb6810B8F0BAAE",
 };
+var chains = {
+    1: "mainnet",
+    4: "rinkeby",
+    56: "bsc",
+    137: "polygon",
+    246: "energyweb",
+    1285: "moonriver",
+};
 function getTokenData(chainId, accumulator, globalList) {
     return __awaiter(this, void 0, void 0, function () {
-        var paginationValue, response, total, error_1;
+        var paginationValue, endpoint, graphQLClient, query, response, total, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    paginationValue = 100;
+                    paginationValue = 500;
                     if (!accumulator)
                         accumulator = 0;
                     if (!globalList)
                         globalList = [];
+                    endpoint = "https://v4.subgraph.".concat(chains[chainId], ".oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph");
+                    graphQLClient = new GraphQLClient(endpoint, { headers: {} });
+                    query = gql(__makeTemplateObject(["\n    {\n      tokens(where: { isDatatoken: true }, first: 1000) {\n        symbol\n        decimals\n        address\n        name\n        supply\n        pools {\n          id\n        }\n        fixedRateExchanges {\n          active\n          exchangeId\n        }\n      }\n    }\n  "], ["\n    {\n      tokens(where: { isDatatoken: true }, first: 1000) {\n        symbol\n        decimals\n        address\n        name\n        supply\n        pools {\n          id\n        }\n        fixedRateExchanges {\n          active\n          exchangeId\n        }\n      }\n    }\n  "]));
+                    console.log(query);
+                    console.log(endpoint);
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 6, , 7]);
-                    return [4, axios.post("https://aquarius.oceanprotocol.com/api/v1/aquarius/assets/query", {
-                            from: accumulator,
-                            size: paginationValue,
-                            query: {
-                                bool: {
-                                    filter: [
-                                        { terms: { chainId: [chainId] } },
-                                        { term: { _index: "aquarius" } },
-                                        { term: { isInPurgatory: "false" } },
-                                    ],
-                                },
-                            },
-                        })];
+                    return [4, graphQLClient.request(query)];
                 case 2:
                     response = _a.sent();
-                    total = response.data.hits.total;
-                    globalList.push.apply(globalList, response.data.hits.hits);
+                    total = response.tokens.length;
+                    globalList.push(response.tokens);
                     accumulator += paginationValue;
                     if (!(total > accumulator)) return [3, 4];
                     return [4, getTokenData(chainId, accumulator, globalList)];
                 case 3:
                     _a.sent();
                     _a.label = 4;
-                case 4: return [4, Promise.resolve(globalList)];
+                case 4: return [4, Promise.resolve(globalList.flat())];
                 case 5: return [2, _a.sent()];
                 case 6:
                     error_1 = _a.sent();
-                    console.error("Error: ".concat(error_1.message));
+                    console.error("Error: ".concat(error_1.message), error_1);
                     return [3, 7];
                 case 7: return [2];
             }
@@ -103,26 +117,14 @@ function getTokenData(chainId, accumulator, globalList) {
     });
 }
 function parseTokenData(globalList) {
-    var parsedList = globalList.map(function (token) {
+    return globalList.map(function (token) {
         try {
-            var _a = token._source, dataTokenInfo = _a.dataTokenInfo, price = _a.price;
-            if (price && price.type === "pool") {
-                var name_1 = dataTokenInfo.name, symbol = dataTokenInfo.symbol, decimals = dataTokenInfo.decimals;
-                var tokenInfo = {
-                    address: dataTokenInfo.address,
-                    name: name_1,
-                    symbol: symbol,
-                    decimals: decimals,
-                    pool: price.address,
-                };
-                return tokenInfo;
-            }
+            return __assign(__assign({}, token), { isFRE: token.pools.length > 0 ? false : true });
         }
         catch (error) {
             console.error("ERROR: ".concat(error.message));
         }
     });
-    return parsedList.filter(function (value) { return value !== undefined; });
 }
 function prepareDataTokenList(tokens, chainId) {
     console.log(tokens);
@@ -146,17 +148,7 @@ function prepareDataTokenList(tokens, chainId) {
             },
         };
         var tokensData = tokens.map(function (token) {
-            var address = token.address, symbol = token.symbol, name = token.name, pool = token.pool, decimals = token.decimals;
-            return {
-                chainId: chainId,
-                address: address,
-                symbol: symbol,
-                pool: pool,
-                name: name,
-                decimals: decimals,
-                logoURI: "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png",
-                tags: ["datatoken"],
-            };
+            return __assign(__assign({}, token), { chainId: chainId, logoURI: "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png", tags: ["datatoken"] });
         });
         var oceantoken = [
             {
@@ -190,7 +182,7 @@ function createDataTokenList(chainId) {
                     tokenData = _a.sent();
                     parsedData = parseTokenData(tokenData);
                     tokenList = prepareDataTokenList(parsedData, chainId);
-                    return [2, JSON.stringify(tokenList)];
+                    return [3, 3];
                 case 2:
                     error_2 = _a.sent();
                     console.error(error_2);
@@ -212,7 +204,6 @@ function main(chainIds) {
                         case 1:
                             datatoken = _a.sent();
                             fileName = "chain".concat(chainId);
-                            fs.writeFileSync("TokenList/".concat(fileName, ".json"), datatoken);
                             return [2];
                     }
                 });
@@ -221,5 +212,5 @@ function main(chainIds) {
         });
     });
 }
-main([1, 137, 56, 246, 1285]);
+main([1, 4, 137, 56, 246, 1285]);
 //# sourceMappingURL=AutoUpdateTokens.js.map
