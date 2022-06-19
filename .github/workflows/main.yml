@@ -20,7 +20,7 @@ jobs:
             cmd: tsc
       - name: Run AutoUpdateTokens.js
         run: |
-          node build/AutoUpdateTokens.ts
+          node build/AutoUpdateTokens.js
       - name: Commit changes
         run: |
           git add TokenList/
