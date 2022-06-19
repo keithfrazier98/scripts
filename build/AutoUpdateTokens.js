@@ -49,16 +49,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var _a = require("graphql-request"), GraphQLClient = _a.GraphQLClient, gql = _a.gql;
+var fs = require('fs');
 var oceanAddresses = {
     1: "0x967da4048cD07aB37855c090aAF366e4ce1b9F48",
     4: "0x8967bcf84170c91b0d24d4302c2376283b0b3a07",
@@ -150,18 +142,7 @@ function prepareDataTokenList(tokens, chainId) {
         var tokensData = tokens.map(function (token) {
             return __assign(__assign({}, token), { chainId: chainId, logoURI: "https://gateway.pinata.cloud/ipfs/QmPQ13zfryc9ERuJVj7pvjCfnqJ45Km4LE5oPcFvS1SMDg/datatoken.png", tags: ["datatoken"] });
         });
-        var oceantoken = [
-            {
-                chainId: chainId,
-                address: oceanAddresses[chainId],
-                symbol: "OCEAN",
-                name: "Ocean Token",
-                decimals: 18,
-                logoURI: "https://gateway.pinata.cloud/ipfs/QmY22NH4w9ErikFyhMXj9uBHn2EnuKtDptTnb7wV6pDsaY",
-                tags: ["oceantoken"],
-            },
-        ];
-        tokenList.tokens = __spreadArray(__spreadArray([], tokensData, true), oceantoken, true);
+        tokenList.tokens = tokensData;
         tokenList.timestamp = new Date().toISOString().replace(/.\d+[A-Z]$/, "+00:00");
         return tokenList;
     }
@@ -182,7 +163,7 @@ function createDataTokenList(chainId) {
                     tokenData = _a.sent();
                     parsedData = parseTokenData(tokenData);
                     tokenList = prepareDataTokenList(parsedData, chainId);
-                    return [3, 3];
+                    return [2, JSON.stringify(tokenList)];
                 case 2:
                     error_2 = _a.sent();
                     console.error(error_2);
@@ -204,6 +185,7 @@ function main(chainIds) {
                         case 1:
                             datatoken = _a.sent();
                             fileName = "chain".concat(chainId);
+                            fs.writeFileSync("TokenListsV4/".concat(fileName, ".json"), datatoken);
                             return [2];
                     }
                 });

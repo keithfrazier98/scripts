@@ -1,4 +1,5 @@
 declare const GraphQLClient: any, gql: any;
+declare const fs: any;
 declare const oceanAddresses: {
     1: string;
     4: string;
@@ -52,5 +53,5 @@ declare function prepareDataTokenList(tokens: any, chainId: number): {
         patch: number;
     };
 };
-declare function createDataTokenList(chainId: number): Promise<void>;
+declare function createDataTokenList(chainId: number): Promise<string>;
 declare function main(chainIds: number[]): Promise<any>;

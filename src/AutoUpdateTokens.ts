@@ -1,6 +1,6 @@
 // import fs from "fs";
 const { GraphQLClient, gql } = require("graphql-request");
-
+const fs = require('fs')
 const oceanAddresses = {
   1: "0x967da4048cD07aB37855c090aAF366e4ce1b9F48",
   4: "0x8967bcf84170c91b0d24d4302c2376283b0b3a07",
@@ -71,10 +71,6 @@ async function getTokenData(chainId: number, accumulator?: number | null, global
       }
     }
   `;
-
-  console.log(query);
-
-  console.log(endpoint);
   try {
     const response = await graphQLClient.request(query);
     const total: number = response.tokens.length;
@@ -117,8 +113,6 @@ function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
  */
 
 function prepareDataTokenList(tokens: any, chainId: number) {
-  console.log(tokens);
-
   try {
     let tokenList = {
       name: "Datax",
@@ -188,7 +182,7 @@ async function main(chainIds: number[]): Promise<any> {
   chainIds.forEach(async (chainId) => {
     let datatoken = await createDataTokenList(chainId);
     let fileName = `chain${chainId}`;
-    // fs.writeFileSync(`TokenList/${fileName}.json`, datatoken);
+    fs.writeFileSync(`TokenListsV4/${fileName}.json`, datatoken);
   });
 }
 
