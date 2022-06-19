@@ -15,8 +15,6 @@ jobs:
       - uses: borales/actions-yarn@v3.0.0
         with:
             cmd: install
-      - name: Setup ts-node
-        run: npm install -g ts-node
       - name: Run AutoUpdateTokens.ts
         run: |
           ts-node src/AutoUpdateTokens.ts
