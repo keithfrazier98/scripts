@@ -94,10 +94,25 @@ async function getTokenData(chainId: number, accumulator?: number | null, global
 function parseTokenData(globalList: Hit[]): SingleTokenInfo[] {
   return globalList.map((token: Hit) => {
     try {
+<<<<<<< HEAD
       return {
         ...token,
         isFRE: token.pools.length > 0 ? false : true,
       } as SingleTokenInfo;
+=======
+      const { dataTokenInfo, price } = token._source;
+      if (price && price.type === "pool" || price.type === "exchange") {
+        const { name, symbol, decimals } = dataTokenInfo;
+        const tokenInfo: SingleTokenInfo = {
+          address: dataTokenInfo.address,
+          name: name,
+          symbol: symbol,
+          decimals: decimals,
+          pool: price.address,
+        };
+        return tokenInfo;
+      }
+>>>>>>> b0d74e9d9 (added exchange tokens and removed ocean)
     } catch (error) {
       console.error(`ERROR: ${error.message}`);
     }
@@ -142,6 +157,7 @@ function prepareDataTokenList(tokens: any, chainId: number) {
       };
     });
 
+<<<<<<< HEAD
     // // fetch 1inch list
     // let oceantoken = [
     //   {
@@ -154,6 +170,9 @@ function prepareDataTokenList(tokens: any, chainId: number) {
     //     tags: ["oceantoken"],
     //   },
     // ];
+=======
+    tokenList.tokens = [...tokensData];
+>>>>>>> b0d74e9d9 (added exchange tokens and removed ocean)
 
     tokenList.tokens = tokensData;
     tokenList.timestamp = new Date().toISOString().replace(/.\d+[A-Z]$/, "+00:00");
